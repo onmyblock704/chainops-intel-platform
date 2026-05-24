@@ -345,3 +345,4 @@ The project is designed to model the type of systems used by blockchain analytic
 This project is intended for educational, research, and engineering demonstration purposes only.
 
 It should not be considered production-grade financial, compliance, or security tooling without additional auditing, testing, and validation.
+# chainops-intel-platform
