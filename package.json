@@ -1,4 +1,12 @@
 {
+  "name": "chainops-intelligence-terminal",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^7.8.0",
@@ -34,6 +42,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^17.4.2",
     "embla-carousel-react": "^8.6.0",
     "ethers": "^6.16.0",
@@ -86,9 +95,10 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "start": "NODE_ENV=production node dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
     "preview": "vite preview --host",
     "check": "tsc --noEmit",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "clean": "rm -rf dist"
   }
 }
