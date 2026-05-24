@@ -169,8 +169,7 @@ export default function Home() {
 
   useEffect(() => {
     const ws = new WebSocket(
-      import.meta.env.VITE_WS_URL ||
-        "ws://localhost:3000/ws"
+      import.meta.env.VITE_WS_URL 
     );
 
     socketRef.current = ws;
