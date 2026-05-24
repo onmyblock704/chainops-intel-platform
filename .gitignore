@@ -1,0 +1,20 @@
+```gitignore
+# dependencies
+node_modules
+
+# next
+.next
+
+# production
+dist
+
+# env
+.env
+
+# logs
+*.log
+
+# misc
+.DS_Store
+```
+
