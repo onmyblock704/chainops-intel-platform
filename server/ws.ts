@@ -2,8 +2,7 @@ import WebSocket, {
   WebSocketServer,
 } from "ws";
 
-let ethSocket: WebSocket | null =
-  null;
+let ethSocket: WebSocket | null = null;
 
 /* =========================================================
    TYPES
@@ -22,40 +21,25 @@ function broadcast(
   wss: WebSocketServer,
   payload: BroadcastPayload
 ) {
-  const message =
-    JSON.stringify(payload);
+  const message = JSON.stringify(payload);
 
   wss.clients.forEach((client) => {
-    if (
-      client.readyState ===
-      WebSocket.OPEN
-    ) {
+    if (client.readyState === WebSocket.OPEN) {
       client.send(message);
     }
   });
 }
 
 /* =========================================================
-   MOCK GENERATORS
+   MOCK GENERATORS (UNCHANGED)
 ========================================================= */
 
 function generateRiskFeedEvent() {
-  const scores = [
-    21, 34, 49, 58, 67, 72, 81, 93,
-  ];
+  const scores = [21, 34, 49, 58, 67, 72, 81, 93];
 
   return {
-    message:
-      "Live contract scan processed",
-
-    score:
-      scores[
-        Math.floor(
-          Math.random() *
-            scores.length
-        )
-      ],
-
+    message: "Live contract scan processed",
+    score: scores[Math.floor(Math.random() * scores.length)],
     timestamp: Date.now(),
   };
 }
@@ -69,33 +53,11 @@ function generateSmartMoneySignal() {
   ];
 
   return {
-    signal:
-      signals[
-        Math.floor(
-          Math.random() *
-            signals.length
-        )
-      ],
-
-    riskScore:
-      Math.floor(
-        Math.random() * 100
-      ),
-
-    whaleExposure:
-      Math.floor(
-        Math.random() * 25
-      ),
-
-    crossChainActivity:
-      Math.floor(
-        Math.random() * 15
-      ),
-
-    intensity:
-      Math.floor(
-        Math.random() * 100
-      ),
+    signal: signals[Math.floor(Math.random() * signals.length)],
+    riskScore: Math.floor(Math.random() * 100),
+    whaleExposure: Math.floor(Math.random() * 25),
+    crossChainActivity: Math.floor(Math.random() * 15),
+    intensity: Math.floor(Math.random() * 100),
   };
 }
 
@@ -103,55 +65,25 @@ function generateCrossChainData() {
   return {
     wallets: [
       {
-        wallet:
-          "0x8f2a91bc8d12",
-
+        wallet: "0x8f2a91bc8d12",
         totalVolume: 2400000,
-
-        chains: [
-          "Ethereum",
-          "Arbitrum",
-          "Base",
-        ],
-
+        chains: ["Ethereum", "Arbitrum", "Base"],
         activityCount: 14,
-
-        behaviorTag:
-          "WHALE",
+        behaviorTag: "WHALE",
       },
-
       {
-        wallet:
-          "0x4aa91f992bc1",
-
+        wallet: "0x4aa91f992bc1",
         totalVolume: 860000,
-
-        chains: [
-          "Optimism",
-          "Ethereum",
-        ],
-
+        chains: ["Optimism", "Ethereum"],
         activityCount: 7,
-
-        behaviorTag:
-          "ARB BOT",
+        behaviorTag: "ARB BOT",
       },
-
       {
-        wallet:
-          "0x91bc2ffab882",
-
+        wallet: "0x91bc2ffab882",
         totalVolume: 420000,
-
-        chains: [
-          "Base",
-          "Polygon",
-        ],
-
+        chains: ["Base", "Polygon"],
         activityCount: 11,
-
-        behaviorTag:
-          "RETAIL",
+        behaviorTag: "RETAIL",
       },
     ],
   };
@@ -161,73 +93,47 @@ function generateCrossChainData() {
    CREATE WS SERVER
 ========================================================= */
 
-export function createWebSocketServer(
-  server: any
-) {
+export function createWebSocketServer(server: any) {
   const wss = new WebSocketServer({
     server,
     path: "/ws",
   });
 
-  const ALCHEMY_WS_URL =
-    process.env.ALCHEMY_WS_URL;
+  const ALCHEMY_WS_URL = process.env.ALCHEMY_WS_URL;
 
-  console.log(
-    "⚡ ChainOps WebSocket server running"
-  );
-
-  console.log(
-    "⚡ WS ready on ws://localhost:3000/ws"
-  );
+  console.log("⚡ ChainOps WebSocket server running");
+  console.log("⚡ WS ready on ws://localhost:3000/ws");
 
   /* =====================================================
      FRONTEND CONNECTIONS
   ===================================================== */
 
   wss.on("connection", () => {
-    console.log(
-      "🟢 Frontend connected"
-    );
+    console.log("🟢 Frontend connected");
   });
 
   /* =====================================================
-     LIVE RISK FEED (PHASE 2F)
+     PHASE STREAMS (ALWAYS ACTIVE)
   ===================================================== */
 
   setInterval(() => {
     broadcast(wss, {
       type: "RISK_FEED_EVENT",
-
-      data:
-        generateRiskFeedEvent(),
+      data: generateRiskFeedEvent(),
     });
   }, 4000);
 
-  /* =====================================================
-     SMART MONEY OVERLAY (PHASE 2E)
-  ===================================================== */
-
   setInterval(() => {
     broadcast(wss, {
-      type:
-        "SMART_MONEY_UPDATE",
-
-      data:
-        generateSmartMoneySignal(),
+      type: "SMART_MONEY_UPDATE",
+      data: generateSmartMoneySignal(),
     });
   }, 6000);
 
-  /* =====================================================
-     CROSS-CHAIN TIMELINE
-  ===================================================== */
-
   setInterval(() => {
     broadcast(wss, {
-      type:
-        "CROSSCHAIN_UPDATE",
-
-      data:
-        generateCrossChainData(),
+      type: "CROSSCHAIN_UPDATE",
+      data: generateCrossChainData(),
     });
   }, 7000);
 
@@ -236,14 +142,8 @@ export function createWebSocketServer(
   ===================================================== */
 
   if (!ALCHEMY_WS_URL) {
-    console.log(
-      "❌ Missing ALCHEMY_WS_URL"
-    );
-
-    console.log(
-      "⚠️ Ethereum WS disabled"
-    );
-
+    console.log("❌ Missing ALCHEMY_WS_URL");
+    console.log("⚠️ Ethereum WS disabled");
     return;
   }
 
@@ -251,103 +151,74 @@ export function createWebSocketServer(
      ETHEREUM CONNECTION
   ===================================================== */
 
-  console.log(
-    "🌐 Connecting to Ethereum WebSocket..."
-  );
+  console.log("🌐 Connecting to Ethereum WebSocket...");
 
-  ethSocket = new WebSocket(
-    ALCHEMY_WS_URL
-  );
+  ethSocket = new WebSocket(ALCHEMY_WS_URL);
 
   ethSocket.on("open", () => {
-    console.log(
-      "✅ Connected to Ethereum WS"
-    );
+    console.log("✅ Connected to Ethereum WS");
 
-    ethSocket?.send(
-      JSON.stringify({
-        jsonrpc: "2.0",
+    const payload = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "eth_subscribe",
+      params: ["newHeads"],
+    };
 
-        id: 1,
+    console.log("📡 Subscribing:", JSON.stringify(payload));
 
-        method:
-          "eth_subscribe",
-
-        params: ["newHeads"],
-      })
-    );
+    ethSocket?.send(JSON.stringify(payload));
   });
 
   /* =====================================================
-     LIVE BLOCK STREAM
+     RAW DEBUG STREAM (CRITICAL)
   ===================================================== */
 
-  ethSocket.on(
-    "message",
-    (data: Buffer) => {
-      try {
-        console.log(
-          data.toString()
-        );
+  ethSocket.on("message", (data: Buffer) => {
+    const raw = data.toString();
 
-        const parsed = JSON.parse(
-          data.toString()
-        );
+    console.log("📥 RAW ETH MESSAGE:", raw);
 
-        if (
-          parsed.method ===
-          "eth_subscription"
-        ) {
-          const block =
-            parsed.params.result;
+    try {
+      const parsed = JSON.parse(raw);
 
-          broadcast(wss, {
-            type:
-              "PENDING_TX",
+      console.log("📦 PARSED:", parsed);
 
-            data: {
-              hash:
-                block.hash,
-            },
-          });
-        }
-      } catch (err) {
-        console.error(
-          "WS Parse Error:",
-          err
-        );
+      if (parsed.method === "eth_subscription") {
+        const block = parsed.params.result;
+
+        console.log("🧱 BLOCK RECEIVED:", block);
+
+        broadcast(wss, {
+          type: "PENDING_TX",
+          data: {
+            hash: block.hash,
+          },
+        });
       }
+    } catch (err) {
+      console.error("WS Parse Error:", err);
     }
-  );
+  });
 
   /* =====================================================
-     ETHEREUM ERRORS
+     ERROR HANDLING
   ===================================================== */
 
   ethSocket.on("error", (err) => {
-    console.error(
-      "Ethereum WS Error:",
-      err
-    );
+    console.error("Ethereum WS Error:", err);
   });
 
   ethSocket.on("close", () => {
-    console.log(
-      "⚠ Ethereum WS disconnected"
-    );
+    console.log("⚠ Ethereum WS disconnected");
   });
-
-  /* =====================================================
-     SERVER ERRORS
-  ===================================================== */
 
   wss.on("error", (err) => {
-    console.error(
-      "WebSocket Server Error:",
-      err
-    );
+    console.error("WebSocket Server Error:", err);
   });
 }
+
+
 
 
 
