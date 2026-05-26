@@ -105,13 +105,17 @@ function generateCrossChainData() {
       {
         wallet:
           "0x8f2a91bc8d12",
+
         totalVolume: 2400000,
+
         chains: [
           "Ethereum",
           "Arbitrum",
           "Base",
         ],
+
         activityCount: 14,
+
         behaviorTag:
           "WHALE",
       },
@@ -119,12 +123,16 @@ function generateCrossChainData() {
       {
         wallet:
           "0x4aa91f992bc1",
+
         totalVolume: 860000,
+
         chains: [
           "Optimism",
           "Ethereum",
         ],
+
         activityCount: 7,
+
         behaviorTag:
           "ARB BOT",
       },
@@ -132,12 +140,16 @@ function generateCrossChainData() {
       {
         wallet:
           "0x91bc2ffab882",
+
         totalVolume: 420000,
+
         chains: [
           "Base",
           "Polygon",
         ],
+
         activityCount: 11,
+
         behaviorTag:
           "RETAIL",
       },
@@ -261,21 +273,23 @@ export function createWebSocketServer(
         method:
           "eth_subscribe",
 
-        params: [
-          "newPendingTransactions",
-        ],
+        params: ["newHeads"],
       })
     );
   });
 
   /* =====================================================
-     LIVE MEMPOOL STREAM
+     LIVE BLOCK STREAM
   ===================================================== */
 
   ethSocket.on(
     "message",
     (data: Buffer) => {
       try {
+        console.log(
+          data.toString()
+        );
+
         const parsed = JSON.parse(
           data.toString()
         );
@@ -284,7 +298,7 @@ export function createWebSocketServer(
           parsed.method ===
           "eth_subscription"
         ) {
-          const hash =
+          const block =
             parsed.params.result;
 
           broadcast(wss, {
@@ -292,7 +306,8 @@ export function createWebSocketServer(
               "PENDING_TX",
 
             data: {
-              hash,
+              hash:
+                block.hash,
             },
           });
         }
@@ -333,6 +348,8 @@ export function createWebSocketServer(
     );
   });
 }
+
+
 
 
 
